@@ -1,10 +1,14 @@
 class MoviesController < ApplicationController
   def index
     @movies = Movie.released
+
   end
 
   def show
     @movie = Movie.find(params[:id])
+    @review = Review.new
+    @review.movie = @movie
+    
   end
 
   def edit

@@ -9,14 +9,24 @@ class Movie < ActiveRecord::Base
   }
   RATINGS = %w(G PG PG-13 R NC-17)
   validates :rating, inclusion: { in: RATINGS }
+
+  has_many :reviews, dependent: :destroy
   
 
   def flop?
     total_gross.blank? || total_gross < 50000000 
   end
 
+  def self.flops
+    where('total_gross < 10000000').order('total_gross asc')
+  end
+
   def hit?
     total_gross > 300000000
+  end
+
+  def self.hits
+    where('total_gross >= 300000000').order('total_gross desc')
   end
 
   def self.released
@@ -25,5 +35,13 @@ class Movie < ActiveRecord::Base
 
   def self.recently_added
     where("created_at <= ?", Time.now).order("created_at DESC")
+  end
+
+  def average_stars
+    reviews.average(:stars)
+  end
+
+  def recent_reviews
+    reviews.order('created_at DESC').limit(2)
   end
 end
